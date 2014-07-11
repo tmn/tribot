@@ -13,7 +13,8 @@ var bot = new irc.Client('leguin.freenode.net', 'tribot', {
   channels: ['#tmntest']
 })
 
-var plugin_manager = require('./plugins/plugin_manager')(bot, config)
+var plugin_manager = require('./plugins/plugin_manager')
+plugin_manager(bot, config)
 
 
 bot.addListener('message', function (user, channel, text, message) {

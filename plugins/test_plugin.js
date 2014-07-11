@@ -1,3 +1,9 @@
-module.exports = function () {
-  console.log('HELLO TEST');
+var test_plugin = {
+  trigger: 'test',
+
+  action: function () {
+    return 'Hello TRI'
+  }
 }
+
+module.exports = test_plugin

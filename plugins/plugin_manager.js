@@ -2,45 +2,43 @@ var fs = require('fs')
 
 var Plugin = {}
 
-var plugins = []
-
+var plugins = {}
 var trigger_prefix = '.'
-var triggers = {}
 
 var register_trigger = function (trigger, plugin, action) {
 
 }
 
 Plugin.load = function (name) {
-  if (plugins.indexOf(name) > -1) {
-    console.error('Plugin exists');
+  if (plugins[name]) {
+    console.error('Plugin exists')
     return
   }
 
-  require('./' + name)
-  plugins.push(name)
+  var p = require('./' + name)
+  plugins[name] = { trigger: p.trigger, action: p.action }
 
-  console.log('Plugin (' + name + ') loaded...');
+  console.log('Plugin (' + name + ') loaded...')
 }
 
 Plugin.reload = function (name) {
   if (Plugin.unload(name)) {
-    Plugin.load(name);
+    Plugin.load(name)
   }
 }
 
 Plugin.unload = function (name) {
-  if (plugins.indexOf(name) > -1) {
-    var name = require.resolve('./' + name)
-    delete require.cache[name]
+  if (plugins[name]) {
+    delete plugins[name];
 
-    plugins.splice(plugins.indexOf(name), 1)
+    var tmp_name = require.resolve('./' + name)
+    delete require.cache[tmp_name]
 
-    console.log(name + ' unloaded...');
+    console.log(name + ' unloaded...')
     return 1
   }
 
-  console.log('couldnt unload');
+  console.log('couldnt unload')
   return 0
 }
 
@@ -49,7 +47,7 @@ module.exports = function (bot, config) {
 
   bot.addListener('message', function (user, channel, text, message) {
     if (text.charAt(0) != trigger_prefix) {
-      console.log('Do somethin...');
+      console.log('Aint nobody got time for this...')
       return
     }
 
@@ -67,7 +65,14 @@ module.exports = function (bot, config) {
         Plugin.reload(args[2])
       }
     }
+    else {
+      for (key in plugins) {
+        if (plugins[key].trigger == args[0]) {
+          bot.say(channel, plugins[key].action())
+        }
+      }
+    }
   })
 
-  console.log('Trigger prefix: ' + config.trigger_prefix);
+  console.log('Trigger prefix: ' + config.trigger_prefix)
 }
