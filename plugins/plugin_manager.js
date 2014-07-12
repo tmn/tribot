@@ -5,8 +5,11 @@ var Plugin = {}
 var plugins = {}
 var trigger_prefix = '.'
 
-var register_trigger = function (trigger, plugin, action) {
-
+var register_trigger = function (plugin) {
+  plugins[name] = {
+    trigger: plugin.trigger,
+    action: plugin.action
+  }
 }
 
 Plugin.load = function (name) {
@@ -15,8 +18,9 @@ Plugin.load = function (name) {
     return
   }
 
-  var p = require('./' + name)
-  plugins[name] = { trigger: p.trigger, action: p.action }
+  var plugin = require('./' + name)
+
+  register_trigger(plugin)
 
   console.log('Plugin (' + name + ') loaded...')
 }
